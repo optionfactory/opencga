@@ -231,7 +231,7 @@ public class CatalogCommandExecutor extends AdminCommandExecutor {
 
         if (catalogCommandOptions.daemonCatalogCommandOptions.stop) {
             Client client = ClientBuilder.newClient();
-            WebTarget target = client.target("http://localhost:" + configuration.getMonitor().getPort())
+            WebTarget target = client.target(String.format("http://%s:%d", configuration.getMonitor().getHost(), configuration.getMonitor().getPort()))
                     .path("opencga")
                     .path("monitor")
                     .path("admin")

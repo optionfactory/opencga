@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -104,6 +105,9 @@ public class GrpcCommandExecutor {// extends CommandExecutor {
         }
 
         // Setting CLI params in the StorageConfiguration
+        if (grpcServerCommandOptions.host != null) {
+            storageConfiguration.getServer().getGrpc().setHost(grpcServerCommandOptions.host);
+        }
         if (grpcServerCommandOptions.port > 0) {
             storageConfiguration.getServer().getGrpc().setPort(grpcServerCommandOptions.port);
         }
@@ -128,12 +132,16 @@ public class GrpcCommandExecutor {// extends CommandExecutor {
 
 
         // Connecting to the server host and port
-        String grpcServerHost = "localhost";
+        String grpcServerHost = Optional.ofNullable(configuration.getServer().getGrpc().getHost()).orElse("localhost");
+        if (grpcServerCommandOptions.host != null) {
+            grpcServerHost = grpcServerCommandOptions.host;
+        }
 
         int grpcServerPort = configuration.getServer().getGrpc().getPort();
         if (grpcServerCommandOptions.port > 0) {
             grpcServerPort = grpcServerCommandOptions.port;
         }
+
         logger.debug("Stopping gRPC server at '{}:{}'", grpcServerHost, grpcServerPort);
 
         // We create the gRPC channel to the specified server host and port

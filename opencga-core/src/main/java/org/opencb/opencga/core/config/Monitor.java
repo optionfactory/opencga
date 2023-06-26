@@ -25,6 +25,7 @@ public class Monitor {
     private int executionDaemonInterval;
     private int fileDaemonInterval;
 
+    private String host;
     private int port;
 
     public Monitor() {
@@ -36,6 +37,7 @@ public class Monitor {
         sb.append("daysToRemove=").append(daysToRemove);
         sb.append(", executionDaemonInterval=").append(executionDaemonInterval);
         sb.append(", fileDaemonInterval=").append(fileDaemonInterval);
+        sb.append(", host=").append(host);
         sb.append(", port=").append(port);
         sb.append('}');
         return sb.toString();
@@ -65,6 +67,15 @@ public class Monitor {
 
     public Monitor setFileDaemonInterval(int fileDaemonInterval) {
         this.fileDaemonInterval = fileDaemonInterval;
+        return this;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public Monitor setHost(String host) {
+        this.host = host;
         return this;
     }
 

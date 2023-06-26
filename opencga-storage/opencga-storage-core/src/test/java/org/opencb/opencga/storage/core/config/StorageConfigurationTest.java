@@ -66,8 +66,8 @@ public class StorageConfigurationTest {
 
         CellBaseConfiguration cellBaseConfiguration = new CellBaseConfiguration("localhost", "v3");
         ServerConfiguration serverConfiguration = new ServerConfiguration()
-                .setRest(new RestServerConfiguration(9090))
-                .setGrpc(new GrpcServerConfiguration(9091));
+                .setRest(new RestServerConfiguration("localhost",9090))
+                .setGrpc(new GrpcServerConfiguration("localhost",9091));
 
         storageConfiguration.getVariant().setDefaultEngine("mongodb");
 

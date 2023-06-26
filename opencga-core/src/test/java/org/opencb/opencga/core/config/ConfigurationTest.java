@@ -73,8 +73,8 @@ public class ConfigurationTest {
         configuration.setAudit(audit);
 
         ServerConfiguration serverConfiguration = new ServerConfiguration();
-        RestServerConfiguration rest = new RestServerConfiguration(1000, 100, 1000);
-        GrpcServerConfiguration grpc = new GrpcServerConfiguration(1001);
+        RestServerConfiguration rest = new RestServerConfiguration("localhost", 1000, 100, 1000);
+        GrpcServerConfiguration grpc = new GrpcServerConfiguration("localhost", 1001);
         serverConfiguration.setGrpc(grpc);
         serverConfiguration.setRest(rest);
 

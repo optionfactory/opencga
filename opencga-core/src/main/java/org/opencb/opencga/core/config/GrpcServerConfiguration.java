@@ -24,8 +24,8 @@ public class GrpcServerConfiguration extends AbstractServerConfiguration {
     public GrpcServerConfiguration() {
     }
 
-    public GrpcServerConfiguration(int port) {
-        super(port);
+    public GrpcServerConfiguration(String host, int port) {
+        super(host, port);
     }
 
 }

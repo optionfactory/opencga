@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 /**
  * Created by imedina on 30/12/15.
@@ -39,8 +40,10 @@ public class RestCommandExecutor { // extends CommandExecutor {
     StorageConfiguration configuration;
     Logger logger;
 
-    public RestCommandExecutor(ServerCommandOptions.RestServerCommandOptions restServerCommandOptions,
-                               StorageConfiguration configuration, Logger logger) {
+    public RestCommandExecutor(
+            ServerCommandOptions.RestServerCommandOptions restServerCommandOptions,
+            StorageConfiguration configuration, Logger logger
+    ) {
         this.restServerCommandOptions = restServerCommandOptions;
         this.configuration = configuration;
         this.logger = logger;
@@ -84,6 +87,9 @@ public class RestCommandExecutor { // extends CommandExecutor {
         }
 
         // Setting CLI params in the StorageConfiguration
+        if (restServerCommandOptions.host != null) {
+            storageConfiguration.getServer().getRest().setHost(restServerCommandOptions.host);
+        }
         if (restServerCommandOptions.port > 0) {
             storageConfiguration.getServer().getRest().setPort(restServerCommandOptions.port);
         }
@@ -100,13 +106,17 @@ public class RestCommandExecutor { // extends CommandExecutor {
     }
 
     public void stop() {
+        String host = Optional.ofNullable(configuration.getServer().getRest().getHost()).orElse("localhost");
+        if (restServerCommandOptions.host != null) {
+            host = restServerCommandOptions.host;
+        }
         int port = configuration.getServer().getRest().getPort();
         if (restServerCommandOptions.port > 0) {
             port = restServerCommandOptions.port;
         }
 
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:" + port)
+        WebTarget target = client.target(String.format("http://%s:%d", host, port))
                 .path("opencga")
                 .path("webservices")
                 .path("rest")

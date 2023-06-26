@@ -79,7 +79,7 @@ public class ServerCommandExecutor extends CommandExecutor {
 
         if (serverCommandOptions.restServerCommandOptions.stop) {
             Client client = ClientBuilder.newClient();
-            WebTarget target = client.target("http://localhost:" + configuration.getServer().getRest().getPort())
+            WebTarget target = client.target(String.format("http://%s:%d", configuration.getServer().getRest().getHost(), configuration.getServer().getRest().getPort()))
                     .path("opencga")
                     .path("webservices")
                     .path("rest")
@@ -101,7 +101,7 @@ public class ServerCommandExecutor extends CommandExecutor {
         }
 
         if (serverCommandOptions.grpcServerCommandOptions.stop) {
-            ManagedChannel channel = ManagedChannelBuilder.forTarget("localhost:" + configuration.getServer().getGrpc().getPort())
+            ManagedChannel channel = ManagedChannelBuilder.forTarget(String.format("%s:%d",configuration.getServer().getGrpc().getHost(), configuration.getServer().getGrpc().getPort()))
                     .usePlaintext()
                     .build();
             AdminServiceGrpc.AdminServiceBlockingStub stub = AdminServiceGrpc.newBlockingStub(channel);

@@ -21,23 +21,35 @@ package org.opencb.opencga.core.config;
  */
 public abstract class AbstractServerConfiguration {
 
+    protected String host;
     protected int port;
     protected String logFile;
 
     public AbstractServerConfiguration() {
     }
 
-    public AbstractServerConfiguration(int port) {
+    public AbstractServerConfiguration(String host, int port) {
+        this.host = host;
         this.port = port;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ServerConfiguration{");
-        sb.append("port=").append(port);
+        sb.append("host=").append(host);
+        sb.append(", port=").append(port);
         sb.append(", logFile='").append(logFile).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public AbstractServerConfiguration setHost(String host) {
+        this.host = host;
+        return this;
     }
 
     public int getPort() {

@@ -28,12 +28,12 @@ public class RestServerConfiguration extends AbstractServerConfiguration {
     public RestServerConfiguration() {
     }
 
-    public RestServerConfiguration(int port) {
-        this(port, 2000, 5000);
+    public RestServerConfiguration(String host, int port) {
+        this(host, port, 2000, 5000);
     }
 
-    public RestServerConfiguration(int port, int defaultLimit, int maxLimit) {
-        super(port);
+    public RestServerConfiguration(String host, int port, int defaultLimit, int maxLimit) {
+        super(host, port);
         this.defaultLimit = defaultLimit;
         this.maxLimit = maxLimit;
     }

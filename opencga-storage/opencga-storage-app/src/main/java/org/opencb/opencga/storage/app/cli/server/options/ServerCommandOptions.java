@@ -55,6 +55,9 @@ public class ServerCommandOptions {
         @Parameter(names = {"--status"}, description = "Status server.")
         public boolean status;
 
+        @Parameter(names = {"--host"}, description = "Host", arity = 1)
+        public String host;
+
         @Parameter(names = {"--port"}, description = "Port number.", arity = 1)
         public int port;
 
