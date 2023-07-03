@@ -78,6 +78,7 @@
                                     <then>
                                         <echo>${settings.localRepository}/org/opencb/opencga/${opencga-storage-hadoop-deps.artifactId}/${opencga-storage-hadoop-deps.version}/${opencga-storage-hadoop-deps.artifactId}-${opencga-storage-hadoop-deps.version}-shaded.jar</echo>
                                         <echo>Compile ${opencga-storage-hadoop-deps.artifactId}-${opencga-storage-hadoop-deps.version}</echo>
+                                        <echo>mvn -f ${project.basedir}/pom.xml -Popencga-storage-hadoop-deps -pl :opencga-storage-hadoop-deps,:${opencga-storage-hadoop-deps.artifactId} install</echo>
                                         <exec executable="mvn" failonerror="true">
                                             <arg value="-f"/>
                                             <arg value="${project.basedir}/pom.xml"/>
