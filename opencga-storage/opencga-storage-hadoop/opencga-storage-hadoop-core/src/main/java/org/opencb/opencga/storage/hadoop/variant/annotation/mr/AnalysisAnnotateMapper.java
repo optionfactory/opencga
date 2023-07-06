@@ -28,21 +28,24 @@ import org.opencb.biodata.models.variant.Variant;
 import org.opencb.biodata.models.variant.avro.VariantAnnotation;
 import org.opencb.commons.datastore.core.ObjectMap;
 import org.opencb.opencga.core.config.storage.StorageConfiguration;
-import org.opencb.opencga.storage.core.metadata.models.ProjectMetadata;
 import org.opencb.opencga.storage.core.metadata.VariantStorageMetadataManager;
+import org.opencb.opencga.storage.core.metadata.models.ProjectMetadata;
 import org.opencb.opencga.storage.core.variant.annotation.VariantAnnotatorException;
 import org.opencb.opencga.storage.core.variant.annotation.annotators.VariantAnnotator;
 import org.opencb.opencga.storage.core.variant.annotation.annotators.VariantAnnotatorFactory;
 import org.opencb.opencga.storage.hadoop.variant.GenomeHelper;
-import org.opencb.opencga.storage.hadoop.variant.converters.annotation.VariantAnnotationToPhoenixConverter;
 import org.opencb.opencga.storage.hadoop.variant.adaptors.phoenix.PhoenixHelper;
 import org.opencb.opencga.storage.hadoop.variant.adaptors.phoenix.VariantPhoenixSchema;
+import org.opencb.opencga.storage.hadoop.variant.converters.annotation.VariantAnnotationToPhoenixConverter;
 import org.opencb.opencga.storage.hadoop.variant.metadata.HBaseVariantStorageMetadataDBAdaptorFactory;
 import org.opencb.opencga.storage.hadoop.variant.mr.AbstractHBaseVariantMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,6 +68,7 @@ public class AnalysisAnnotateMapper extends AbstractHBaseVariantMapper<NullWrita
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         super.setup(context);
+        final String appHome = System.getProperty("app.home", System.getenv("OPENCGA_HOME"));
         this.forceAnnotation = context.getConfiguration().getBoolean(CONFIG_VARIANT_TABLE_ANNOTATE_FORCE, false);
 
         /* Annotation -> Phoenix converter */
@@ -82,15 +86,23 @@ public class AnalysisAnnotateMapper extends AbstractHBaseVariantMapper<NullWrita
             projectMetadata = scm.getProjectMetadata();
         }
         try {
-            // FIXME! This is WRONG. Should read StorageConfigurationFile from client
-            StorageConfiguration storageConfiguration = StorageConfiguration.load(
-                StorageConfiguration.class.getClassLoader().getResourceAsStream(configFile));
-            this.variantAnnotator = VariantAnnotatorFactory.buildVariantAnnotator(storageConfiguration, projectMetadata,
-                    options);
+            final Path path = Paths.get(String.format("%s/conf/%s", appHome, configFile));
+            if (appHome != null && Files.exists(path)) {
+                logger.info("Loading storage configuration from filesystem");
+                final StorageConfiguration storageConfiguration = StorageConfiguration.load(Files.newInputStream(path.toFile().toPath()));
+                this.variantAnnotator = VariantAnnotatorFactory.buildVariantAnnotator(storageConfiguration, projectMetadata, options);
+            } else {
+                logger.info("Loading storage configuration from classpath");
+                StorageConfiguration storageConfiguration = StorageConfiguration.load(
+                        StorageConfiguration.class.getClassLoader().getResourceAsStream(configFile)
+                );
+                this.variantAnnotator = VariantAnnotatorFactory.buildVariantAnnotator(storageConfiguration, projectMetadata, options);
+            }
         } catch (Exception e) {
             throw new IllegalStateException("Problems loading storage configuration from " + configFile, e);
         }
     }
+
     private final CopyOnWriteArrayList<Variant> variantsToAnnotate = new CopyOnWriteArrayList<>();
 
     private void annotateVariants(Context context, boolean force) throws IOException, InterruptedException, VariantAnnotatorException {
